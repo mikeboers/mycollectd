@@ -1,0 +1,12 @@
+#!/usr/bin/env python
+
+import os
+import sys
+
+# add ourselves to the path
+sys.path.append(os.path.abspath(os.path.join(
+    __file__, '..', '..'
+)))
+
+from mycollectd._main import main
+main()
