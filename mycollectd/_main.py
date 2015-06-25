@@ -10,12 +10,15 @@ import os
 from .battery import sample_battery
 from .ping import sample_ping
 from .smc import sample_smc
+from .airport import sample_airport
+from .airportscan import sample_airportscan
 
-samplers = [sample_battery, sample_ping, sample_smc]
+samplers = [sample_battery, sample_ping, sample_smc, sample_airport, sample_airportscan]
 
 def main():
 
     parser = argparse.ArgumentParser()
+    parser.add_argument('-x', '--exclude')
     parser.add_argument('-t', '--types')
     parser.add_argument('-i', '--indent', action='store_true')
     parser.add_argument('-d', '--out-dir')
@@ -24,6 +27,7 @@ def main():
 
     # determine which types to sample (None -> all)
     types_to_sample = set(re.split(r'\W+', args.types)) if args.types else None
+    types_to_exclude = set(re.split(r'\W+', args.exclude or ''))
 
     # get the output file handle
     if args.out_dir:
@@ -39,6 +43,8 @@ def main():
         name = re.sub(r'^sample_', '', func.__name__)
 
         # only run the requested types
+        if name in types_to_exclude:
+            continue
         if types_to_sample is not None and name not in types_to_sample:
             continue
 

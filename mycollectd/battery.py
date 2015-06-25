@@ -28,6 +28,7 @@ def sample_battery():
         return
 
     data = plist_loads(out)[0]
+    
     return dict((k, data[k]) for k in KEYS)
 
 
