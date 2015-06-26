@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 from subprocess import Popen, PIPE
 from plistlib import readPlistFromString as plist_loads
 
@@ -7,6 +8,7 @@ from plistlib import readPlistFromString as plist_loads
 # see: http://www.parhelia.ch/blog/statics/k3_keys.html
 # see: https://stackoverflow.com/questions/28568775/description-for-apples-smc-keys
 KEY_TO_NAME = dict(line.strip().split(None, 1) for line in '''
+
 
 F0Ac    Fan0 RPM
 F0Mn    Fan0 Min RPM
@@ -18,36 +20,11 @@ F1Mx    Fan1 Max RPM
 ALT0    Ambient Light 0
 ALT1    Ambient Light 1
 
-TA0P    Airflow 1
-TA1P    Airflow 2
-
-TC0D    CPU 0 Die
-TC0H    CPU 0 Heatsink
-TC0P    CPU 0 Proximity
-
-TC1C    CPU Core 1
-
-TG0D    GPU 0 Die
-TG0H    GPU 0 Heatsink
-TG0P    GPU 0 Proximity
-
-TH0P    HardDisk proximity temp
-TL0P    LCD proximity temp
-TO0P    Optical Drive proximity temp
-#TW0P    Airport temp
-Tm0P    Misc Local temp
-Tp0P    Power Supply Proximity temp
-
-
-
-
-
-
 TCXC    PECI CPU
 TCXc    PECI CPU
 TC0P    CPU 1 Proximity
 TC0H    CPU 1 Heatsink
-TC0D    CPU 1 Package
+TC0D    CPU 1 Die
 TC0E    CPU 1
 TC0F    CPU 1
 TC1C    CPU Core 1
@@ -59,14 +36,14 @@ TC6C    CPU Core 6
 TC7C    CPU Core 7
 TC8C    CPU Core 8
 TCAH    CPU 1 Heatsink Alt.
-TCAD    CPU 1 Package Alt.
+TCAD    CPU 1 Die Alt.
 TC1P    CPU 2 Proximity
 TC1H    CPU 2 Heatsink
-TC1D    CPU 2 Package
+TC1D    CPU 2 Die
 TC1E    CPU 2
 TC1F    CPU 2
 TCBH    CPU 2 Heatsink Alt.
-TCBD    CPU 2 Package Alt.
+TCBD    CPU 2 Die Alt.
 
 TCSC    PECI SA
 TCSc    PECI SA
@@ -74,11 +51,12 @@ TCSA    PECI SA
 
 TCGC    PECI GPU
 TCGc    PECI GPU
-TG0P    GPU Proximity
-TG0D    GPU Die
-TG1D    GPU Die
-TG0H    GPU Heatsink
-TG1H    GPU Heatsink
+TG0P    GPU 1 Proximity
+TG1P    GPU 2 Proximity
+TG0D    GPU 1 Die
+TG1D    GPU 2 Die
+TG0H    GPU 1 Heatsink
+TG1H    GPU 2 Heatsink
 
 Ts0S    Memory Proximity
 TM0P    Mem Bank A1
@@ -255,7 +233,15 @@ def sample_smc():
         if key not in KEY_TO_NAME:
             continue
 
-        value = float(value.split()[0])
+        encoded = value.split('(')[0].strip()
+        if not encoded:
+            continue
+
+        try:
+            value = float(encoded)
+        except:
+            print >> sys.stderr, '#', m.groups()
+            raise
 
         res[key + " " + KEY_TO_NAME[key]] = value
 
