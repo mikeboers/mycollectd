@@ -26,6 +26,8 @@ def sample_battery():
 
     if proc.returncode:
         return
+    if not out:
+        return
 
     data = plist_loads(out)[0]
     
