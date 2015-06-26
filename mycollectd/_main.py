@@ -22,7 +22,7 @@ def main():
     parser.add_argument('-t', '--types')
     parser.add_argument('-i', '--indent', action='store_true')
     parser.add_argument('-d', '--out-dir')
-    parser.add_argument('-f', '--format', default='%Y-%m-%d.log')
+    parser.add_argument('-f', '--format', default='%Y/%m/%Y-%m-%d.log')
     args = parser.parse_args()
 
     # determine which types to sample (None -> all)
