@@ -1,6 +1,6 @@
 from subprocess import Popen, PIPE
 from plistlib import readPlistFromString as plist_loads
-import pprint
+
 
 KEYS = '''
     Amperage

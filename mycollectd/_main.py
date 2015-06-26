@@ -1,10 +1,10 @@
 import argparse
 import datetime
 import json
+import os
 import pkg_resources
 import re
 import sys
-import os
 
 
 from .battery import sample_battery
