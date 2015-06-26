@@ -34,7 +34,7 @@ def main():
         path = os.path.join(args.out_dir, datetime.datetime.utcnow().strftime(args.format))
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))
-        output = open(path, 'wb')
+        output = open(path, 'ab')
     else:
         output = sys.stdout
 
