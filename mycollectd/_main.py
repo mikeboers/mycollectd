@@ -6,6 +6,7 @@ import pkg_resources
 import re
 import sys
 
+from .utils import get_output_fh
 
 from .battery import sample_battery
 from .ping import sample_ping
@@ -22,21 +23,14 @@ def main():
     parser.add_argument('-t', '--types')
     parser.add_argument('-i', '--indent', action='store_true')
     parser.add_argument('-d', '--out-dir')
-    parser.add_argument('-f', '--format', default='%Y/%m/%Y-%m-%d.log')
+    parser.add_argument('-f', '--format')
     args = parser.parse_args()
 
     # determine which types to sample (None -> all)
     types_to_sample = set(re.split(r'\W+', args.types)) if args.types else None
     types_to_exclude = set(re.split(r'\W+', args.exclude or ''))
 
-    # get the output file handle
-    if args.out_dir:
-        path = os.path.join(args.out_dir, datetime.datetime.utcnow().strftime(args.format))
-        if not os.path.exists(os.path.dirname(path)):
-            os.makedirs(os.path.dirname(path))
-        output = open(path, 'ab')
-    else:
-        output = sys.stdout
+    output = get_output_fh(args.out_dir, args.format)
 
     for func in samplers:
 
@@ -61,7 +55,7 @@ def main():
         if res:
             output.write(encoded_res + '\n')
 
-    output.flush()
+    output.close()
 
 
 

@@ -1,12 +1,7 @@
 import re
 from subprocess import Popen, PIPE
 
-
-def sample_ping():
-
-    proc = Popen(['/sbin/ping', '-m255', '-t5', '-nc1', '8.8.8.8'], stdout=PIPE, stderr=PIPE)
-    out, err = proc.communicate()
-
+def parse_output(out):
     m = re.search(r'icmp_seq=(\d+) ttl=(\d+) time=([\d\.]+)', out)
     if m:
         seq, ttl, time = m.groups()
@@ -20,5 +15,9 @@ def sample_ping():
             'time': -1,
         }
 
+def sample_ping():
 
+    proc = Popen(['/sbin/ping', '-m255', '-t5', '-nc1', '8.8.8.8'], stdout=PIPE, stderr=PIPE)
+    out, err = proc.communicate()
+    return parse_output(out)
 

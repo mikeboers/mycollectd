@@ -19,6 +19,13 @@ KEYS = '''
 '''.strip().split()
 
 
+def parse_output(out):
+    if not out:
+        return
+    data = plist_loads(out)[0]
+    return dict((k, data[k]) for k in KEYS)
+
+
 def sample_battery():
 
     proc = Popen(['/usr/sbin/ioreg', '-arn', 'AppleSmartBattery'], stdout=PIPE, stderr=PIPE)
@@ -26,11 +33,6 @@ def sample_battery():
 
     if proc.returncode:
         return
-    if not out:
-        return
 
-    data = plist_loads(out)[0]
-    
-    return dict((k, data[k]) for k in KEYS)
-
+    return parse_output(out)
 

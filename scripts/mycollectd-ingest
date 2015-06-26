@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+
+import argparse
+import datetime
+import itertools
+import json
+import os
+import sys
+
+# add ourselves to the path
+sys.path.append(os.path.abspath(os.path.join(
+    __file__, '..', '..'
+)))
+
+from mycollectd.utils import iter_raw_output, get_output_fh
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-u', '--until')
+parser.add_argument('-f', '--format')
+parser.add_argument('-d', '--out-dir')
+parser.add_argument('-t', '--type')
+parser.add_argument('input', nargs='*')
+args = parser.parse_args()
+
+
+if args.type == 'ping':
+    from mycollectd.ping import parse_output
+elif args.type == 'battery':
+    from mycollectd.battery import parse_output
+else:
+    print >> sys.stderr, 'unknown type:', args.type
+    exit(1)
+
+
+until = args.until and datetime.datetime.strptime(args.until, '%Y-%m-%dT%H:%M:%S')
+input_ = itertools.chain.from_iterable(
+    (open(x) for x in args.input)
+    if args.input else
+    (sys.stdin, )
+)
+
+for time, out in iter_raw_output(input_):
+    
+    if until and time > until:
+        continue
+
+    res = parse_output(out)
+    if not res:
+        continue
+    
+    res['_time'] = time.isoformat('T')
+    res['_type'] = 'ping'
+    
+    out_fh = get_output_fh(args.out_dir, args.format, time)
+    out_fh.write(json.dumps(res) + '\n')
+    if args.out_dir:
+        out_fh.close()
+
+
+
