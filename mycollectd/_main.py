@@ -13,8 +13,16 @@ from .ping import sample_ping
 from .smc import sample_smc
 from .airport import sample_airport
 from .airportscan import sample_airportscan
+from .timezone import sample_timezone
 
-samplers = [sample_battery, sample_ping, sample_smc, sample_airport, sample_airportscan]
+samplers = [
+    sample_battery,
+    sample_ping,
+    sample_smc,
+    sample_airport,
+    sample_airportscan,
+    sample_timezone,
+]
 
 def main():
 
@@ -46,7 +54,7 @@ def main():
             res = func()
             if res:
                 res.setdefault('_type', name)
-                res.setdefault('_time', datetime.datetime.utcnow().isoformat('T'))
+                res.setdefault('_time', datetime.datetime.utcnow().isoformat('T') + 'Z')
                 encoded_res = json.dumps(res, sort_keys=True, indent=4 if args.indent else None)
         except Exception as e:
             res = dict(type=name, error_type=e.__class__.__name__, error=str(e))

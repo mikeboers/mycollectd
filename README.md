@@ -27,3 +27,5 @@ TODO
 
 - compress data that no longer matches the pattern
 - ingest old adhoc data
+    - correct from localtime; assume PST/PDT
+
