@@ -14,6 +14,7 @@ from .smc import sample_smc
 from .airport import sample_airport
 from .airportscan import sample_airportscan
 from .timezone import sample_timezone
+from .ipaddr import sample_ipaddr
 
 samplers = [
     sample_battery,
@@ -22,6 +23,7 @@ samplers = [
     sample_airport,
     sample_airportscan,
     sample_timezone,
+    sample_ipaddr,
 ]
 
 def main():
