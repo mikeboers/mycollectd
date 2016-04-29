@@ -15,6 +15,9 @@ from .airport import sample_airport
 from .airportscan import sample_airportscan
 from .timezone import sample_timezone
 from .ipaddr import sample_ipaddr
+from .loadavg import sample_loadavg
+from .netio import sample_netio
+from .diskio import sample_diskio
 
 samplers = [
     sample_battery,
@@ -24,6 +27,9 @@ samplers = [
     sample_airportscan,
     sample_timezone,
     sample_ipaddr,
+    sample_loadavg,
+    sample_netio,
+    sample_diskio,
 ]
 
 def main():
@@ -59,7 +65,7 @@ def main():
                 res.setdefault('_time', datetime.datetime.utcnow().isoformat('T') + 'Z')
                 encoded_res = json.dumps(res, sort_keys=True, indent=4 if args.indent else None)
         except Exception as e:
-            res = dict(type=name, error_type=e.__class__.__name__, error=str(e))
+            res = dict(_type='error', sample_type=name, error_type=e.__class__.__name__, error=str(e))
             encoded_res = json.dumps(res)
 
         if res:
